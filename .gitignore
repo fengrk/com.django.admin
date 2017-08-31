@@ -1,0 +1,8 @@
+.svn/
+.idea/
+*.pyc
+www/
+*.out
+*.log
+*.xlsx
+
