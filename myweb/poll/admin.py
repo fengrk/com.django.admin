@@ -29,6 +29,10 @@ class ReadCountAdmin(admin.ModelAdmin):
 class ReadCountSummaryAdmin(ModelAdmin):
     change_list_template = 'admin/read_count_summary_change_list.html'
 
+    _queryset = ReadCountSummary.objects.values('date') \
+        .annotate(total_date=Count('date'), read_count=Sum('read_count')) \
+        .order_by("date")
+
     def changelist_view(self, request, extra_context=None):
         response = super(ReadCountSummaryAdmin, self).changelist_view(
             request,
@@ -54,16 +58,12 @@ class ReadCountSummaryAdmin(ModelAdmin):
         return response
 
     def get_queryset(self, request):
-        query_set = ReadCount.objects.values('date') \
-            .annotate(total_date=Count('date'), read_count=Sum('read_count')) \
-            .order_by("date")
-        return query_set
+        return self._queryset
 
     def get_changelist(self, request, **kwargs):
+        _queryset = self._queryset
+
         class MyChangeList(ChangeList):
             def get_queryset(self, request):
-                return ReadCount.objects.values('date') \
-                    .annotate(total_date=Count('date'), read_count=Sum('read_count')) \
-                    .order_by("date")
-
+                return _queryset
         return MyChangeList
