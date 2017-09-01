@@ -30,7 +30,8 @@ class ReadCountAdmin(admin.ModelAdmin):
 
 @admin.register(ReadCountSummary)
 class ReadCountSummaryAdmin(ModelAdmin):
-    list_display = ["date", "all_count"]
+    list_display = ["date", "all_count", 'hot_paper']
+    search_fields = ('date', )
     ordering = ('-date',)
     list_per_page = 20
 
@@ -46,8 +47,10 @@ class ReadCountSummaryAdmin(ModelAdmin):
     all_count.short_description = '阅读量/赞数'
     all_count.admin_order_field = None  # None: 不排序;　'read_count': 以 read_count 参数排序
 
-    # def hot_paper(self, obj):
-    #     return obj.hot_paper
-    #
-    # hot_paper.short_description = "热门文章"
-    # hot_paper.admin_order_field = "hot_paper"
+    def hot_paper(self, obj):
+        try:
+            return self.model.objects.filter(date=obj.date).order_by("-read_count").first().paper
+        except:
+            return '-'
+
+    hot_paper.short_description = "热门文章"
