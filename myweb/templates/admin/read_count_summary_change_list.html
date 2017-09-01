@@ -1,0 +1,42 @@
+{% extends "admin/change_list.html" %}
+
+{% load humanize %}
+
+{% block content_title %}
+    <h1> 阅读量分析</h1>
+{% endblock %}
+
+{% block result_list %}
+    <div class="results">
+        <table>
+            <thead>
+            <tr>
+                <th>
+                    <div class="text">
+                        <a href="#">日期</a>
+                    </div>
+                </th>
+                <th>
+                    <div class="text">
+                        <a href="#">总阅读量</a>
+                    </div>
+                </th>
+                <th>
+                    <div class="text">
+                        <a href="#">最受欢迎的文章</a>
+                    </div>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in summary %}
+                <tr class="{% cycle 'row1' 'row2' %}">
+                    <td> {{ row.date }} </td>
+                    <td> {{ row.read_count | intcomma }} </td>
+                    <td> {{ row.paper }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

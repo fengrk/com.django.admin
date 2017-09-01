@@ -29,3 +29,10 @@ class ReadCount(models.Model):
     class Meta:
         verbose_name = '阅读量'
         verbose_name_plural = '阅读量'
+
+
+class ReadCountSummary(ReadCount):
+    class Meta:
+        proxy = True
+        verbose_name = "阅读量分析"
+        verbose_name_plural = "阅读量分析"
