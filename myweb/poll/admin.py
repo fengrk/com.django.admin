@@ -30,27 +30,25 @@ class ReadCountAdmin(admin.ModelAdmin):
 
 @admin.register(ReadCountSummary)
 class ReadCountSummaryAdmin(ModelAdmin):
-    list_display = ["date", "all_count", 'hot_paper']
-    search_fields = ('date', )
+    change_list_template = 'admin/read_count_summary_change_list.html'
     ordering = ('-date',)
-    list_per_page = 20
+    list_per_page = 5
 
-    def queryset(self, request):
-        return super(ReadCountSummaryAdmin, self).queryset(request)
+    def changelist_view(self, request, extra_context=None):
+        extra_context = {}
+        summary = []
+        for record in self.get_queryset(request):
+            summary.append({
+                "date": record["date"],
+                "read_count": record["read_count"],
+                "paper": self.model.objects.filter(date=record["date"]).order_by("-read_count").first().paper}
+            )
 
-    def all_count(self, obj):
-        if obj.good_count:
-            return "%d/%d" % (obj.read_count, obj.good_count)
-        else:
-            return "%d/0" % obj.read_count
+        extra_context["summary"] = summary
+        return super(ReadCountSummaryAdmin, self).changelist_view(request, extra_context=extra_context)
 
-    all_count.short_description = '阅读量/赞数'
-    all_count.admin_order_field = None  # None: 不排序;　'read_count': 以 read_count 参数排序
-
-    def hot_paper(self, obj):
-        try:
-            return self.model.objects.filter(date=obj.date).order_by("-read_count").first().paper
-        except:
-            return '-'
-
-    hot_paper.short_description = "热门文章"
+    def get_queryset(self, request):
+        ReadCount.objects.all()
+        qs = super(ReadCountSummaryAdmin, self).get_queryset(request)
+        new_qs = qs.values("date").annotate(read_count=Sum('read_count'), )
+        return new_qs
