@@ -28,6 +28,7 @@ class ReadCountAdmin(admin.ModelAdmin):
 @admin.register(ReadCountSummary)
 class ReadCountSummaryAdmin(ModelAdmin):
     change_list_template = 'admin/read_count_summary_change_list.html'
+    list_per_page = 2
 
     _queryset = ReadCountSummary.objects.values('date') \
         .annotate(total_date=Count('date'), read_count=Sum('read_count')) \
