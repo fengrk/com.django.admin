@@ -27,44 +27,23 @@ class ReadCountAdmin(admin.ModelAdmin):
 
 @admin.register(ReadCountSummary)
 class ReadCountSummaryAdmin(ModelAdmin):
-    change_list_template = 'admin/read_count_summary_change_list.html'
-    list_per_page = 2
+    list_display = ["date", "total_read_count"]
+    ordering = ('-date',)
+    list_per_page = 20
 
-    _queryset = ReadCountSummary.objects.values('date') \
-        .annotate(total_date=Count('date'), read_count=Sum('read_count')) \
-        .order_by("date")
+    def queryset(self, request):
+        qs = super(ReadCountSummaryAdmin, self).queryset(request)
+        new_qs = qs.values('date').annotate(total_date=Count('date'), read_count=Sum('read_count'),)
+        return new_qs
 
-    def changelist_view(self, request, extra_context=None):
-        response = super(ReadCountSummaryAdmin, self).changelist_view(
-            request,
-            extra_context=extra_context,
-        )
-        try:
-            queryset = response.context_data['cl'].queryset
-        except (AttributeError, KeyError):
-            return response
+    def total_read_count(self, obj):
+        return obj.read_count
 
-        # response.context_data['cl'].queryset = queryset = ReadCount.objects.values('date') \
-        #     .annotate(total_date=Count('date'), read_count=Sum('read_count')) \
-        #     .order_by("date")
+    total_read_count.short_description = '总阅读量'
+    total_read_count.admin_order_field = 'read_count'
 
-        summary = []
-
-        for result in queryset:
-            result["paper"] = ReadCount.objects.filter(date=result["date"]).order_by("-read_count").first()
-            summary.append(result.copy())
-
-        response.context_data["summary"] = summary
-
-        return response
-
-    def get_queryset(self, request):
-        return self._queryset
-
-    def get_changelist(self, request, **kwargs):
-        _queryset = self._queryset
-
-        class MyChangeList(ChangeList):
-            def get_queryset(self, request):
-                return _queryset
-        return MyChangeList
+    # def hot_paper(self, obj):
+    #     return obj.hot_paper
+    #
+    # hot_paper.short_description = "热门文章"
+    # hot_paper.admin_order_field = "hot_paper"
