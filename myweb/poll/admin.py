@@ -16,31 +16,35 @@ class PaperAdmin(admin.ModelAdmin):
 
 @admin.register(ReadCount)
 class ReadCountAdmin(admin.ModelAdmin):
-    empty_value_display = '-empty-'
     fields = ("paper", "read_count", 'good_count', "date")
+    list_display = ("paper", "read_count", 'view_good_count', "date")
+    list_per_page = 20
 
     def view_good_count(self, obj):
         return obj.good_count
 
-    view_good_count.empty_value_display = '???'
+    view_good_count.empty_value_display = '-'
+    view_good_count.short_description = '赞数'
+    view_good_count.admin_order_field = 'good_count'
 
 
 @admin.register(ReadCountSummary)
 class ReadCountSummaryAdmin(ModelAdmin):
-    list_display = ["date", "total_read_count"]
+    list_display = ["date", "all_count"]
     ordering = ('-date',)
     list_per_page = 20
 
     def queryset(self, request):
-        qs = super(ReadCountSummaryAdmin, self).queryset(request)
-        new_qs = qs.values('date').annotate(total_date=Count('date'), read_count=Sum('read_count'),)
-        return new_qs
+        return super(ReadCountSummaryAdmin, self).queryset(request)
 
-    def total_read_count(self, obj):
-        return obj.read_count
+    def all_count(self, obj):
+        if obj.good_count:
+            return "%d/%d" % (obj.read_count, obj.good_count)
+        else:
+            return "%d/0" % obj.read_count
 
-    total_read_count.short_description = '总阅读量'
-    total_read_count.admin_order_field = 'read_count'
+    all_count.short_description = '阅读量/赞数'
+    all_count.admin_order_field = None  # None: 不排序;　'read_count': 以 read_count 参数排序
 
     # def hot_paper(self, obj):
     #     return obj.hot_paper
