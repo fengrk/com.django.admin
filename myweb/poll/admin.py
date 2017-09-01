@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
+from django.contrib.admin.views.main import ChangeList
 from django.db.models import Sum, Count
 
 from models import Paper, ReadCount, ReadCountSummary
@@ -33,14 +34,14 @@ class ReadCountSummaryAdmin(ModelAdmin):
             request,
             extra_context=extra_context,
         )
-        # try:
-        #     queryset = response.context_data['cl'].queryset
-        # except (AttributeError, KeyError):
-        #     return response
+        try:
+            queryset = response.context_data['cl'].queryset
+        except (AttributeError, KeyError):
+            return response
 
-        response.context_data['cl'].queryset = queryset = ReadCount.objects.values('date') \
-                .annotate(total_date=Count('date'), read_count=Sum('read_count')) \
-                .order_by("date")
+        # response.context_data['cl'].queryset = queryset = ReadCount.objects.values('date') \
+        #     .annotate(total_date=Count('date'), read_count=Sum('read_count')) \
+        #     .order_by("date")
 
         summary = []
 
@@ -52,8 +53,17 @@ class ReadCountSummaryAdmin(ModelAdmin):
 
         return response
 
-        # def get_queryset(self, request):
-        #     query_set = ReadCount.objects.values('date') \
-        #         .annotate(total_date=Count('date'), read_count=Sum('read_count')) \
-        #         .order_by("date")
-        #     return query_set
+    def get_queryset(self, request):
+        query_set = ReadCount.objects.values('date') \
+            .annotate(total_date=Count('date'), read_count=Sum('read_count')) \
+            .order_by("date")
+        return query_set
+
+    def get_changelist(self, request, **kwargs):
+        class MyChangeList(ChangeList):
+            def get_queryset(self, request):
+                return ReadCount.objects.values('date') \
+                    .annotate(total_date=Count('date'), read_count=Sum('read_count')) \
+                    .order_by("date")
+
+        return MyChangeList
