@@ -12,6 +12,10 @@ class Paper(models.Model):
     def __unicode__(self):
         return self.title
 
+    class Meta:
+        verbose_name = '文章'
+        verbose_name_plural = '文章'
+
 
 class ReadCount(models.Model):
     paper = models.ForeignKey(Paper, verbose_name="文章")
@@ -21,3 +25,7 @@ class ReadCount(models.Model):
 
     def __unicode__(self):
         return "%s-%s" % (self.paper.title, self.date)
+
+    class Meta:
+        verbose_name = '阅读量'
+        verbose_name_plural = '阅读量'

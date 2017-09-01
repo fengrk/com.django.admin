@@ -11,6 +11,7 @@ class PaperAdmin(admin.ModelAdmin):
     fields = ('title', 'content')
 
 
+
 @admin.register(ReadCount)
 class ReadCountAdmin(admin.ModelAdmin):
     empty_value_display = '-empty-'
