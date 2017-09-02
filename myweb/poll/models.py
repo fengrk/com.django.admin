@@ -29,6 +29,7 @@ class ReadCount(models.Model):
     class Meta:
         verbose_name = '阅读量'
         verbose_name_plural = '阅读量'
+        permissions = (("can_read_all", "Can Read All"),)  # work after makemigrations
 
 
 class ReadCountSummary(ReadCount):
@@ -36,3 +37,4 @@ class ReadCountSummary(ReadCount):
         proxy = True
         verbose_name = "阅读量分析"
         verbose_name_plural = "阅读量分析"
+        default_permissions = ('change',)  # add button not disappear

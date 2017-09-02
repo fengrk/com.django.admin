@@ -34,6 +34,13 @@ class ReadCountSummaryAdmin(ModelAdmin):
     list_per_page = 2
     ordering = ("-date",)
 
+    class Meta:
+        permissions = (
+            ("can_drive", "Can drive"),
+            ("can_vote", "Can vote in elections"),
+            ("can_drink", "Can drink alcohol"),
+        )
+
     def changelist_view(self, request, extra_context=None):
         response = super(ReadCountSummaryAdmin, self).changelist_view(
             request,
