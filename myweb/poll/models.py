@@ -21,7 +21,7 @@ class ReadCount(models.Model):
     paper = models.ForeignKey(Paper, verbose_name="文章")
     read_count = models.IntegerField(verbose_name="阅读数")
     date = models.DateField(verbose_name="日期")
-    good_count = models.IntegerField(null=True, blank=True)
+    good_count = models.IntegerField(verbose_name="点赞数", null=True, blank=True)
 
     def __unicode__(self):
         return "%s-%s" % (self.paper.title, self.date)

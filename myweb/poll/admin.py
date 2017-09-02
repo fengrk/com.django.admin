@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 from __future__ import unicode_literals
 
-import datetime
 import logging
 
 from django.contrib import admin
@@ -23,7 +22,7 @@ class PaperAdmin(admin.ModelAdmin):
 class ReadCountAdmin(admin.ModelAdmin):
     fields = ("paper", "read_count", 'good_count', "date")
     list_display = ("paper", "read_count", 'view_good_count', "date")
-    list_per_page = 5
+    list_per_page = 20
     ordering = ('-date',)
 
     def view_good_count(self, obj):
@@ -33,15 +32,11 @@ class ReadCountAdmin(admin.ModelAdmin):
     view_good_count.short_description = '赞数'
     view_good_count.admin_order_field = 'good_count'
 
-    def get_queryset(self, request):
-        qs = super(ReadCountAdmin, self).get_queryset(request)
-        return qs.filter(date__gt=datetime.date(2017, 8, 30))
-
 
 @admin.register(ReadCountSummary)
 class ReadCountSummaryAdmin(ModelAdmin):
     change_list_template = 'admin/read_count_summary_change_list.html'
-    list_per_page = 2
+    list_per_page = 5
     ordering = ("-date",)
 
     def changelist_view(self, request, extra_context=None):
@@ -82,5 +77,10 @@ class ReadCountSummaryAdmin(ModelAdmin):
                 #     if _pk in ordering_set:
                 #         ordering_set.remove(_pk)
                 return ['-date']
+
+            def get_results(self, request):
+                if not hasattr(self, "_got_result"):
+                    setattr(self, "_got_result", super(MyChangList, self).get_results(request))
+                return getattr(self, "_got_result")
 
         return MyChangList
