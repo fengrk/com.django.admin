@@ -1,0 +1,62 @@
+{% extends "admin/blank_page.html" %}
+{% load i18n admin_urls static admin_list %}
+{% load humanize %}
+
+{% block content_title %}
+    <a href="/poll/readcountsummary/{% if is_popup %}?_popup=1{% endif %}" class="btn btn-success"
+       id="id-turn-to-table">
+        <i class="icon-plus-sign icon-white"></i>表</a>
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script src={% static "poll/echarts.js" %}></script>
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-poll model-readcountsummary chart-count{% endblock %}
+
+{% block content %}
+    <div id="main" style="height:400px;"></div>
+    <script>
+        var myChart = echarts.init(document.getElementById('main'));
+        option = {
+            color: ['#3398DB'],
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: {{ x_data|safe }},
+                    axisTick: {
+                        alignWithLabel: true
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value'
+                }
+            ],
+            series: [
+                {
+                    name: '直接访问',
+                    type: 'bar',
+                    barWidth: '90%',
+                    data: {{ y_data|safe }}
+                }
+            ]
+        };
+        myChart.setOption(option);
+    </script>
+{% endblock %}
+

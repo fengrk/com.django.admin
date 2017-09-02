@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import logging
 
+from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 from django.contrib.admin.views.main import ChangeList
@@ -54,7 +55,7 @@ class ReadCountAdmin(admin.ModelAdmin):
 @admin.register(ReadCountSummary)
 class ReadCountSummaryAdmin(ModelAdmin):
     change_list_template = 'admin/read_count_summary_change_list.html'
-    list_per_page = 5
+    list_per_page = 10
     ordering = ("-date",)
 
     def changelist_view(self, request, extra_context=None):
@@ -76,6 +77,32 @@ class ReadCountSummaryAdmin(ModelAdmin):
 
         response.context_data["summary"] = summary
 
+        return response
+
+    def countchart_view(self, request, extra_context=None):
+        _template = "admin/read_count_summary_chart_count.html"
+
+        # context = {}
+        #
+        # cl = {"opts": {"app_label": "poll", "app_config": {"verbose_name": "测试栏目"}, "verbose_name_plural": "报表分析"}}
+        # context["cl"] = cl
+        #
+        # return render_to_response(_template, RequestContext(request, context))
+        response = super(ReadCountSummaryAdmin, self).changelist_view(
+            request,
+            extra_context=extra_context,
+        )
+
+        x_data = []
+        y_data = []
+
+        for record in ReadCount.objects.values("date").annotate(read_count=Sum('read_count'), ).order_by("date"):
+            x_data.append(str(record["date"]))
+            y_data.append(record["read_count"])
+
+        response.context_data["x_data"] = x_data
+        response.context_data["y_data"] = y_data
+        response.template_name = _template
         return response
 
     def get_queryset(self, request):
@@ -110,6 +137,11 @@ class ReadCountSummaryAdmin(ModelAdmin):
         new_urlpatterns = []
         changelist_urlpattern = urlpatterns[0]
         new_urlpatterns.append(changelist_urlpattern)
+
+        info = self.model._meta.app_label, self.model._meta.model_name
+
+        new_urlpatterns.append(url(r'^chart/count/$',
+                                   self.admin_site.admin_view(self.countchart_view), name='%s_%s_countchart' % info), )
 
         for urlpattern in urlpatterns[1:]:
             urlpattern.callback = changelist_urlpattern.callback
