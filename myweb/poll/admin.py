@@ -1,10 +1,11 @@
 # -*- coding:utf-8 -*-
 from __future__ import unicode_literals
 
+import datetime
+
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
-from django.contrib.admin.views.main import ChangeList
-from django.db.models import Sum, Count
+from django.db.models import Sum
 
 from models import Paper, ReadCount, ReadCountSummary
 
@@ -18,7 +19,7 @@ class PaperAdmin(admin.ModelAdmin):
 class ReadCountAdmin(admin.ModelAdmin):
     fields = ("paper", "read_count", 'good_count', "date")
     list_display = ("paper", "read_count", 'view_good_count', "date")
-    list_per_page = 20
+    list_per_page = 2
 
     def view_good_count(self, obj):
         return obj.good_count
@@ -26,6 +27,10 @@ class ReadCountAdmin(admin.ModelAdmin):
     view_good_count.empty_value_display = '-'
     view_good_count.short_description = '赞数'
     view_good_count.admin_order_field = 'good_count'
+
+    def get_queryset(self, request):
+        qs = super(ReadCountAdmin, self).get_queryset(request)
+        return qs.filter(date__gte=datetime.date(2017, 8, 31))
 
 
 @admin.register(ReadCountSummary)
@@ -67,6 +72,7 @@ class ReadCountSummaryAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         ReadCount.objects.all()
-        qs = super(ReadCountSummaryAdmin, self).get_queryset(request)
+        qs = super(ReadCountSummaryAdmin, self).get_queryset(request) \
+            .filter(date__gte=datetime.date(2017, 8, 31))
         new_qs = qs.values("date").annotate(read_count=Sum('read_count'), )
         return new_qs
