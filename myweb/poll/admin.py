@@ -17,6 +17,7 @@ logger = logging.getLogger("django")
 class PaperAdmin(admin.ModelAdmin):
     fields = ("title", "content", "update_time")
     list_display = ("title", "content", "update_time")
+    readonly_fields = ['update_time']
 
 
 @admin.register(ReadCount)
