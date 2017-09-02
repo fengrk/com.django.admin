@@ -101,3 +101,17 @@ class ReadCountSummaryAdmin(ModelAdmin):
                 return getattr(self, "_got_result")
 
         return MyChangList
+
+    def get_urls(self):
+        urlpatterns = super(ReadCountSummaryAdmin, self).get_urls()
+
+        # 所有url跳转至 changelist
+        new_urlpatterns = []
+        changelist_urlpattern = urlpatterns[0]
+        new_urlpatterns.append(changelist_urlpattern)
+
+        for urlpattern in urlpatterns[1:]:
+            urlpattern.callback = changelist_urlpattern.callback
+            new_urlpatterns.append(urlpattern)
+
+        return new_urlpatterns
