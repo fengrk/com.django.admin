@@ -1,0 +1,84 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}"/>{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block usertools %}
+    {% if has_permission %}
+        <div id="user-tools">
+            {% if app_list %}
+                {% for app in app_list %}
+                    <a href="{{ app.app_url }}" class="section"
+                       title="{% blocktrans with name=app.name %}Models in the {{ name }} application{% endblocktrans %}">{{ app.name }}</a>
+                    {#                        <div class="app-{{ app.app_label }} module">#}
+                    {#                            <table>#}
+                    {#                                <caption>#}
+                    {#                                    <a href="{{ app.app_url }}" class="section"#}
+                    {#                                       title="{% blocktrans with name=app.name %}Models in the {{ name }} application{% endblocktrans %}">{{ app.name }}</a>#}
+                    {#                                </caption>#}
+                    {#                                {% for model in app.models %}#}
+                    {#                                    <tr class="model-{{ model.object_name|lower }}">#}
+                    {#                                        {% if model.admin_url %}#}
+                    {#                                            <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></th>#}
+                    {#                                        {% else %}#}
+                    {#                                            <th scope="row">{{ model.name }}</th>#}
+                    {#                                        {% endif %}#}
+                    {##}
+                    {#                                        {% if model.add_url %}#}
+                    {#                                            <td><a href="{{ model.add_url }}" class="addlink">{% trans 'Add' %}</a></td>#}
+                    {#                                        {% else %}#}
+                    {#                                            <td>&nbsp;</td>#}
+                    {#                                        {% endif %}#}
+                    {##}
+                    {#                                        {% if model.admin_url %}#}
+                    {#                                            <td><a href="{{ model.admin_url }}"#}
+                    {#                                                   class="changelink">{% trans 'Change' %}</a>#}
+                    {#                                            </td>#}
+                    {#                                        {% else %}#}
+                    {#                                            <td>&nbsp;</td>#}
+                    {#                                        {% endif %}#}
+                    {#                                    </tr>#}
+                    {#                                {% endfor %}#}
+                    {#                            </table>#}
+                    {#                        </div>#}
+                {% endfor %}
+            {% endif %}
+        <strong>{% firstof user.get_short_name user.get_username %}</strong>
+{#        #}
+            {#            {% block welcome-msg %}#}
+            {#                {% trans 'Welcome,' %}#}
+            {#                <strong>{% firstof user.get_short_name user.get_username %}</strong>.#}
+            {#            {% endblock %}#}
+            {#            {% block userlinks %}#}
+            {#                {% if site_url %}#}
+            {#                    <a href="{{ site_url }}">{% trans 'View site' %}</a> /#}
+            {#                {% endif %}#}
+            {#                {% if user.is_active and user.is_staff %}#}
+            {#                    {% url 'django-admindocs-docroot' as docsroot %}#}
+            {#                    {% if docsroot %}#}
+            {#                        <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /#}
+            {#                    {% endif %}#}
+            {#                {% endif %}#}
+            {#                {% if user.has_usable_password %}#}
+            {#                    <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /#}
+            {#                {% endif %}#}
+            {#                <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>#}
+            {#            {% endblock %}#}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div id="content-main"></div>
+{% endblock %}
+
+{% block pretitle %}{% endblock %}
+{% block content_title %}{% endblock %}
+{% block sidebar %}{% endblock %}
