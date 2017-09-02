@@ -15,22 +15,39 @@ logger = logging.getLogger("django")
 
 @admin.register(Paper)
 class PaperAdmin(admin.ModelAdmin):
-    fields = ('title', 'content')
+    fields = ("title", "content", "update_time")
+    list_display = ("title", "content", "update_time")
 
 
 @admin.register(ReadCount)
 class ReadCountAdmin(admin.ModelAdmin):
     fields = ("paper", "read_count", 'good_count', "date")
-    list_display = ("paper", "read_count", 'view_good_count', "date")
+    list_display = ("paper", "read_count", 'view_good_count', "has_good_count", "human_date")
     list_per_page = 20
     ordering = ('-date',)
+    list_editable = ("read_count",)
 
     def view_good_count(self, obj):
+        if obj.good_count is None:
+            return "<a style='color: red;'>-</a>"
         return obj.good_count
 
     view_good_count.empty_value_display = '-'
+    view_good_count.allow_tags = True  # html safe
     view_good_count.short_description = '赞数'
     view_good_count.admin_order_field = 'good_count'
+
+    def has_good_count(self, obj):
+        return obj.good_count is not None
+
+    has_good_count.boolean = True
+    has_good_count.short_description = '有赞'
+
+    def human_date(self, obj):
+        return str(obj.date)
+
+    human_date.short_description = '日期'
+    human_date.admin_order_field = 'date'
 
 
 @admin.register(ReadCountSummary)
