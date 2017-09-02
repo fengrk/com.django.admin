@@ -31,21 +31,32 @@ class ReadCountAdmin(admin.ModelAdmin):
 @admin.register(ReadCountSummary)
 class ReadCountSummaryAdmin(ModelAdmin):
     change_list_template = 'admin/read_count_summary_change_list.html'
-    ordering = ('-date',)
-    list_per_page = 5
+    list_per_page = 2
+    ordering = ("-date",)
 
     def changelist_view(self, request, extra_context=None):
-        extra_context = {}
-        summary = []
-        for record in self.get_queryset(request):
-            summary.append({
-                "date": record["date"],
-                "read_count": record["read_count"],
-                "paper": self.model.objects.filter(date=record["date"]).order_by("-read_count").first().paper}
-            )
+        response = super(ReadCountSummaryAdmin, self).changelist_view(
+            request,
+            extra_context=extra_context,
+        )
+        try:
+            queryset = response.context_data['cl'].queryset
+        except (AttributeError, KeyError):
+            return response
 
-        extra_context["summary"] = summary
-        return super(ReadCountSummaryAdmin, self).changelist_view(request, extra_context=extra_context)
+        # response.context_data['cl'].queryset = queryset = ReadCount.objects.values('date') \
+        #     .annotate(total_date=Count('date'), read_count=Sum('read_count')) \
+        #     .order_by("date")
+
+        summary = []
+
+        for result in queryset:
+            result["paper"] = ReadCount.objects.filter(date=result["date"]).order_by("-read_count").first()
+            summary.append(result.copy())
+
+        response.context_data["summary"] = summary
+
+        return response
 
     def get_queryset(self, request):
         ReadCount.objects.all()
