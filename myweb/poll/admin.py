@@ -102,6 +102,7 @@ class ReadCountSummaryAdmin(ModelAdmin):
 
         response.context_data["x_data"] = x_data
         response.context_data["y_data"] = y_data
+        response.context_data["is_popup"] = True
         response.template_name = _template
         return response
 

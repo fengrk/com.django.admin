@@ -3,7 +3,8 @@
 {% load humanize %}
 
 {% block content_title %}
-    <a href="/poll/readcountsummary/chart/count/{% if is_popup %}?_popup=1{% endif %}" class="btn btn-success">
+    <a href="/poll/readcountsummary/chart/count/{% if is_popup %}?_popup=1{% endif %}" class="btn btn-success"
+       onclick='return showAddAnotherPopup(this);'>
         <i class="icon-plus-sign icon-white"></i>图</a>{% endblock %}
 
 {% block result_list %}
