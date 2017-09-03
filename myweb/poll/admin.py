@@ -102,7 +102,27 @@ class ReadCountSummaryAdmin(ModelAdmin):
 
         response.context_data["x_data"] = x_data
         response.context_data["y_data"] = y_data
-        response.context_data["is_popup"] = True
+        response.template_name = _template
+        return response
+
+    def form_test_vew(self, request, extra_context=None):
+        from django import forms
+
+        _template = "poll/django-example.html"
+
+        response = super(ReadCountSummaryAdmin, self).changelist_view(
+            request,
+            extra_context=extra_context,
+        )
+
+        class PaperForm(forms.ModelForm):
+
+            class Meta:
+                model = Paper
+                fields = ('title', 'content',)
+
+        response.context_data["action_url"] = "/poll/paper/add/"
+        response.context_data["form"] = PaperForm()
         response.template_name = _template
         return response
 
@@ -143,6 +163,9 @@ class ReadCountSummaryAdmin(ModelAdmin):
 
         new_urlpatterns.append(url(r'^chart/count/$',
                                    self.admin_site.admin_view(self.countchart_view), name='%s_%s_countchart' % info), )
+
+        new_urlpatterns.append(url(r'^form/test/$',
+                                   self.admin_site.admin_view(self.form_test_vew), name='%s_%s_form_test' % info), )
 
         for urlpattern in urlpatterns[1:]:
             urlpattern.callback = changelist_urlpattern.callback
