@@ -28,6 +28,7 @@ class ReadCountAdmin(admin.ModelAdmin):
     list_per_page = 20
     ordering = ('-date',)
     list_editable = ("read_count",)
+    change_list_template = "admin/readcount_change_list.html"
 
     def view_good_count(self, obj):
         if obj.good_count is None:
@@ -116,7 +117,6 @@ class ReadCountSummaryAdmin(ModelAdmin):
         )
 
         class PaperForm(forms.ModelForm):
-
             class Meta:
                 model = Paper
                 fields = ('title', 'content',)
