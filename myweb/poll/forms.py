@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django import forms
 from django.contrib.auth.models import User
+from django.forms.utils import ErrorList
 
 from poll.models import Author
 
@@ -16,6 +17,19 @@ class AuthorForm(forms.ModelForm):
         model = Author
         fields = "__all__"
         exclude = ("user",)
+
+    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
+                 initial=None, error_class=ErrorList, label_suffix=None,
+                 empty_permitted=False, instance=None, use_required_attribute=None):
+        if instance is not None and initial is None:
+            initial = {"user_name": instance.user.username,
+                       "password": instance.user.password,
+                       "password1": instance.user.password}
+
+        super(AuthorForm, self).__init__(data=data, files=files, auto_id=auto_id, prefix=prefix,
+                                         initial=initial, error_class=error_class, label_suffix=label_suffix,
+                                         empty_permitted=empty_permitted, instance=instance,
+                                         use_required_attribute=use_required_attribute)
 
     def save(self, commit=True):
         return super(AuthorForm, self).save(commit=commit)
