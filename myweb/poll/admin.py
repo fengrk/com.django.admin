@@ -8,8 +8,8 @@ from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 from django.contrib.admin.views.main import ChangeList
 from django.db.models import Sum
-
-from models import Paper, ReadCount, ReadCountSummary
+from poll.forms import AuthorForm
+from models import Paper, ReadCount, ReadCountSummary, Author
 
 logger = logging.getLogger("django")
 
@@ -172,3 +172,12 @@ class ReadCountSummaryAdmin(ModelAdmin):
             new_urlpatterns.append(urlpattern)
 
         return new_urlpatterns
+
+
+class AuthorAdmin(ModelAdmin):
+    form = AuthorForm
+    fields = ("nick_name", "user_name", "password", "password1")
+    list_display = ("user", "nick_name")
+
+
+admin.site.register(Author, AuthorAdmin)

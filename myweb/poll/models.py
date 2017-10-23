@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 from __future__ import unicode_literals
 
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -38,3 +39,18 @@ class ReadCountSummary(ReadCount):
         verbose_name = "阅读量分析"
         verbose_name_plural = "阅读量分析"
         default_permissions = ('change',)  # add button not disappear
+
+
+class Author(models.Model):
+    user = models.OneToOneField(User, verbose_name="账号", blank=True)
+    nick_name = models.CharField(verbose_name="昵称", max_length=20)
+
+    class Meta:
+        verbose_name = "作者"
+        verbose_name_plural = "作者"
+
+    def __str__(self):
+        return self.__unicode__().encode("utf-8")
+
+    def __unicode__(self):
+        return self.nick_name
