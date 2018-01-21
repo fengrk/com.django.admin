@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'bootstrap3',
-    'poll'
+    'poll',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -154,4 +155,14 @@ LOGGING = {
             'propagate': False
         },
     }
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+        "ROUTING": "myweb.routing.channel_routing",
+    },
 }
