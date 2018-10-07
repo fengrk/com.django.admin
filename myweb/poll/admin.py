@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
 
 import logging
 
@@ -9,8 +9,8 @@ from django.contrib.admin import ModelAdmin
 from django.contrib.admin.views.main import ChangeList
 from django.db.models import Sum
 
-from models import Paper, ReadCount, ReadCountSummary, Author, Author2, Book
 from poll.forms import AuthorForm
+from .models import Paper, ReadCount, ReadCountSummary, Author, Author2, Book
 
 logger = logging.getLogger("django")
 
