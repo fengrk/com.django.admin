@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'bootstrap3',
-    'poll'
+    'poll',
+    'zhwiki'
 ]
 
 MIDDLEWARE = [
@@ -149,7 +150,12 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['default', 'console'],
+            'handlers': ['default', 'console'] if DEBUG else ["default"],
+            'level': 'INFO',
+            'propagate': False
+        },
+        '': {
+            'handlers': ['default', 'console'] if DEBUG else ["default"],
             'level': 'INFO',
             'propagate': False
         },
