@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -54,3 +54,27 @@ class Author(models.Model):
 
     def __unicode__(self):
         return self.nick_name
+
+
+class EditRecord(models.Model):
+    paper = models.ForeignKey(Paper, verbose_name="文章")
+    record_time = models.DateTimeField(verbose_name="编辑时间")
+
+    class Meta:
+        verbose_name = "编辑记录"
+        verbose_name_plural = "编辑记录"
+
+    def __str__(self):
+        return self.__unicode__().encode("utf-8")
+
+    def __unicode__(self):
+        return "record for %s" % self.paper.title
+
+
+class Author2(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class Book(models.Model):
+    author = models.ForeignKey(Author2, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)

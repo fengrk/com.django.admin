@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
 
 import logging
 
@@ -8,8 +8,9 @@ from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 from django.contrib.admin.views.main import ChangeList
 from django.db.models import Sum
+
 from poll.forms import AuthorForm
-from models import Paper, ReadCount, ReadCountSummary, Author
+from .models import Paper, ReadCount, ReadCountSummary, Author, Author2, Book
 
 logger = logging.getLogger("django")
 
@@ -180,4 +181,15 @@ class AuthorAdmin(ModelAdmin):
     list_display = ("user", "nick_name")
 
 
+class BookInline(admin.TabularInline):
+    model = Book
+
+
+class Author2Admin(admin.ModelAdmin):
+    inlines = [
+        BookInline,
+    ]
+
+
 admin.site.register(Author, AuthorAdmin)
+admin.site.register(Author2, Author2Admin)
